@@ -1,0 +1,49 @@
+# Git
+.git
+.github
+.gitignore
+.gitattributes
+
+# PHP / Composer
+vendor
+
+# Node
+node_modules
+npm-debug.log*
+
+# Build output
+public/build
+public/hot
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Storage & Cache
+storage/logs/*
+!storage/logs/.gitignore
+storage/framework/cache/*
+!storage/framework/cache/.gitignore
+storage/framework/sessions/*
+!storage/framework/sessions/.gitignore
+storage/framework/views/*
+!storage/framework/views/.gitignore
+bootstrap/cache/*
+!bootstrap/cache/.gitignore
+
+# SQLite
+*.sqlite
+*.sqlite-journal
+*.sqlite-wal
+*.sqlite-shm
+
+# IDE & OS
+.idea
+.vscode
+*.swp
+.DS_Store
+
+# Docker / Make
+docker-compose.yml
+Makefile
