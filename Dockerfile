@@ -81,8 +81,10 @@ RUN apk add --no-cache \
 # Adjust www-data user to match host user UID/GID (1000)
 ARG UID=1000
 ARG GID=1000
-RUN usermod -u ${UID} www-data 2>/dev/null || true \
-    && groupmod -g ${GID} www-data 2>/dev/null || true
+RUN groupmod -g ${GID} www-data 2>/dev/null || true \
+    && usermod -u ${UID} -g ${GID} -s /bin/sh www-data 2>/dev/null || true \
+    && mkdir -p /home/www-data \
+    && chown -R ${UID}:${GID} /home/www-data
 
 RUN docker-php-ext-configure gd --with-jpeg --with-webp --with-freetype \
     && docker-php-ext-install \
@@ -108,7 +110,10 @@ COPY package.json package-lock.json* ./
 RUN npm install
 
 COPY docker/entrypoint.sh /entrypoint.sh
-RUN chmod +x /entrypoint.sh
+RUN chmod +x /entrypoint.sh \
+    && chown -R ${UID}:${GID} /var/www/html
+
+USER www-data
 
 EXPOSE 9000
 

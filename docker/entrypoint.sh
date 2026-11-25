@@ -27,7 +27,7 @@ if [ ! -f /var/www/html/database/database.sqlite ]; then
     echo "Creating SQLite database..."
     touch /var/www/html/database/database.sqlite
 fi
-chmod 775 /var/www/html/database
+chmod 775 /var/www/html/database 2>/dev/null || true
 chmod 664 /var/www/html/database/database.sqlite 2>/dev/null || true
 
 # -------------------------------------------------------
@@ -39,19 +39,23 @@ mkdir -p \
     storage/framework/sessions \
     storage/framework/views \
     storage/logs
-chown -R www-data:www-data storage bootstrap/cache /var/www/html/database
-find storage bootstrap/cache -type d -exec chmod 775 {} +
-find storage bootstrap/cache -type f -exec chmod 664 {} +
+if [ "$(id -u)" = "0" ]; then
+    chown -R www-data:www-data storage bootstrap/cache /var/www/html/database
+fi
+find storage bootstrap/cache -type d -exec chmod 775 {} + 2>/dev/null || true
+find storage bootstrap/cache -type f -exec chmod 664 {} + 2>/dev/null || true
 
 # Ensure vendor and node_modules are owned by www-data and writable
-WWW_UID=$(id -u www-data)
-if [ -d /var/www/html/vendor ] && [ "$(stat -c '%u' /var/www/html/vendor)" != "$WWW_UID" ]; then
-    chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
-    chmod -R u=rwX,g=rwX /var/www/html/vendor 2>/dev/null || true
-fi
-if [ -d /var/www/html/node_modules ] && [ "$(stat -c '%u' /var/www/html/node_modules)" != "$WWW_UID" ]; then
-    chown -R www-data:www-data /var/www/html/node_modules 2>/dev/null || true
-    chmod -R u=rwX,g=rwX /var/www/html/node_modules 2>/dev/null || true
+if [ "$(id -u)" = "0" ]; then
+    WWW_UID=$(id -u www-data)
+    if [ -d /var/www/html/vendor ] && [ "$(stat -c '%u' /var/www/html/vendor)" != "$WWW_UID" ]; then
+        chown -R www-data:www-data /var/www/html/vendor 2>/dev/null || true
+        chmod -R u=rwX,g=rwX /var/www/html/vendor 2>/dev/null || true
+    fi
+    if [ -d /var/www/html/node_modules ] && [ "$(stat -c '%u' /var/www/html/node_modules)" != "$WWW_UID" ]; then
+        chown -R www-data:www-data /var/www/html/node_modules 2>/dev/null || true
+        chmod -R u=rwX,g=rwX /var/www/html/node_modules 2>/dev/null || true
+    fi
 fi
 
 # -------------------------------------------------------
